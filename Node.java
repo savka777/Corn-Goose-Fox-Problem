@@ -7,8 +7,8 @@ import java.util.ArrayList;
  */
 
 public class Node {
-    GameState state;    // The state associated with the node
-    Node parent;        // The node from which this node was reached.
+    GameState state;    // The state associated with the node [L,L,R,R] for example
+    Node parent;        // The node from which this node was reached. (use to keep track of the cost)
     private int cost;   // The cost of reaching this node from the initial node, i.e., number of moves.
 
     /*
@@ -40,6 +40,8 @@ public class Node {
        	whose state is that specified as the second argument.
        	If such a node is in the list, the first one encountered is returned.
        	Otherwise null is returned.
+
+        In other words, make sure that we dont revisit and expand a state that we have already seen
      */
     public static Node findNodeWithState(ArrayList<Node> nodeList, GameState gs) {
         for (Node n : nodeList) {

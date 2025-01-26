@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class Solver {
 
-    ArrayList<Node> unexpanded = new ArrayList<Node>(); // Holds unexpanded node list
-    ArrayList<Node> expanded = new ArrayList<Node>();   // Holds expanded node list
+    ArrayList<Node> queue = new ArrayList<Node>(); // Holds unexpanded node list
+    ArrayList<Node> visited = new ArrayList<Node>();   // Holds expanded node list
     Node rootNode;                                      // Node representing initial state
 
     /*
@@ -30,10 +30,35 @@ public class Solver {
        Breadth first search is both complete and optimal with respect to number of moves.
        The Printwriter argument is used to specify where the output should be directed.
      */
+    
     public void solve(PrintWriter output) {
-        //Add code here to implement breath first search based on the pseudo code and solution output using the reportSolution method given below.
-	    //This is a challenging task to most students. Don’t worry if you cannot complete it. Solution code will be provided later. 
-    	//It would be fine if you can run and understand the provided solution code.
+        queue.add(rootNode);
+        while (!queue.isEmpty()) {
+
+            Node curr_node = queue.get(0);
+            queue.remove(0);
+
+            if(curr_node.state.isGoal()) {
+                output.println("Solution Found");
+                reportSolution(curr_node,output);
+                System.out.println("Solution Found");
+                return;
+            }
+
+            visited.add(curr_node);
+            ArrayList<GameState> statesToAdd = curr_node.state.possibleMoves();
+            System.out.println(curr_node.state);
+
+            for(GameState g : statesToAdd){
+                
+                if(Node.findNodeWithState(visited, g) == null && Node.findNodeWithState(queue,g) == null){
+
+                    Node newNode = new Node(g,curr_node,curr_node.getCost() + 1);
+                    queue.add(newNode);
+                }
+            }
+        }
+
         output.println("No solution found");
         System.out.println("No solution found");
     }
@@ -60,8 +85,8 @@ public class Solver {
         output.println("Solution found!");
         printSolution(n, output);
         output.println(n.getCost() + " Moves");
-        output.println("Nodes expanded: " + this.expanded.size());
-        output.println("Nodes unexpanded: " + this.unexpanded.size());
+        output.println("Nodes expanded: " + this.visited.size());
+        output.println("Nodes unexpanded: " + this.queue.size());
         output.println();
     }
 
