@@ -1,0 +1,13 @@
+Solution found!
+Corn: L, Goose: L, Fox: L, Farmer: L
+Corn: L, Goose: R, Fox: L, Farmer: R
+Corn: L, Goose: R, Fox: L, Farmer: L
+Corn: R, Goose: R, Fox: L, Farmer: R
+Corn: R, Goose: L, Fox: L, Farmer: L
+Corn: R, Goose: L, Fox: R, Farmer: R
+Corn: R, Goose: L, Fox: R, Farmer: L
+Corn: R, Goose: R, Fox: R, Farmer: R
+7 Moves
+Nodes expanded: 9
+Nodes unexpanded: 0
+

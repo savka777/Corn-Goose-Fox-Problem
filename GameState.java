@@ -1,19 +1,14 @@
-// This class implements the state space representation of the corn, goose and fox problem. 
-// Please write comments where appropriate on the state space, initial state, goal state, operations and transition functions. 
-
 import java.util.ArrayList;
 
-/*
-      Instances of the class GameState represent states that can arise in the sliding block puzzle.
-      The char array board represents the locations (L or R) of Corn, Goose, Fox, and Farmer respectively. 
-      INITIAL_BOARD and GOAL_BOARD are constant arrays holding the initial and goal states (board configurations).
+/**
+ * GameState class represents a state in the problem space.
+ * It includes the board configuration and methods to generate valid moves.
  */
-
 public class GameState {
     final char[] board;
-    private char farmerPlace; // not really necessary. the same as board[BOARD_SIZE-1]
-    static final char[] INITIAL_BOARD = { 'L', 'L', 'L', 'L' };
-    static final char[] GOAL_BOARD = { 'R', 'R', 'R', 'R' };
+    private char farmerPlace; // tracks the farmer's position (L or R)
+    static final char[] INITIAL_BOARD = { 'L', 'L', 'L', 'L' }; // initial board configuration
+    static final char[] GOAL_BOARD = { 'R', 'R', 'R', 'R' }; // goal board
     static final int BOARD_SIZE = 4;
 
     // For better readbility and clarity of positions
@@ -22,18 +17,20 @@ public class GameState {
     static final int FOX = 2;
     static final int FARMER = 3;
 
-    /*
-     * GameState is a constructor that takes a char array holding a board
-     * configuration as argument.
+    /**
+     * Constructor: Initializes the game state with a given board configuration.
+     *
+     * @param board The board configuration as a char array.
      */
     public GameState(char[] board) {
         this.board = board;
         this.farmerPlace = board[FARMER];
     }
 
-    /*
-     * clone returns a new GameState with the same board configuration as the
-     * current GameState.
+    /**
+     * Creates a copy of the current game state.
+     *
+     * @return A new GameState object with the same board configuration.
      */
     public GameState clone() {
         char[] clonedBoard = new char[BOARD_SIZE];
@@ -45,17 +42,6 @@ public class GameState {
         return farmerPlace;
     }
 
-    /*
-     * toString returns the board configuration of the current GameState as a
-     * printable string.
-     */
-    // public String toString() {
-    // String s = "[";
-    // for (char c : this.board)
-    // s = s + c;
-    // return s + "]";
-    // }
-
     public String toString() {
         return "Corn: " + board[CORN] +
                 ", Goose: " + board[GOOSE] +
@@ -63,10 +49,10 @@ public class GameState {
                 ", Farmer: " + board[FARMER];
     }
 
-    /*
-     * isGoal returns true if and only if the board configuration of the current
-     * GameState is the goal
-     * configuration.
+    /**
+     * Checks if the current state is the goal state.
+     *
+     * @return True if the board matches the goal configuration, otherwise false.
      */
     public boolean isGoal() {
         for (int j = 0; j < BOARD_SIZE; j++) {
@@ -76,10 +62,11 @@ public class GameState {
         return true;
     }
 
-    /*
-     * sameBoard returns true if and only if the GameState supplied as argument has
-     * the same board
-     * configuration as the current GameState.
+    /**
+     * Compares the current state with another state.
+     *
+     * @param gs The GameState to compare with.
+     * @return True if the states are identical, otherwise false.
      */
     public boolean sameBoard(GameState gs) {
         for (int j = 0; j < BOARD_SIZE; j++) {
@@ -89,13 +76,11 @@ public class GameState {
         return true;
     }
 
-    /*
-     * Helper method to make sure that if we add a possible move, it does not
-     * voilate the rules
-     * Rule 1: Goose and Fox can NOT be left alone
-     * Rule 2: Goose and Corn can NOT be left alone
+    /**
+     * Validates if the current move adheres to the pre and post conditions.
+     *
+     * @return True if the move is valid, otherwise false.
      */
-
     public boolean isValidMove() {
         if (board[FARMER] == 'L') {
             if (board[GOOSE] == 'R' && board[CORN] == 'R')
@@ -111,26 +96,19 @@ public class GameState {
         return true;
     }
 
-    /*
-     * Returns all POSSIBLE moves that can be made from the CURRENT node (game
-     * state)
-     * This is based on the farmers position's and the rules of the problem
-     * 
-     * This implements 4 possible move:
-     * 
-     * Farmer takes 1 item across Corn, Goose, Fox (3 moves)
-     * Farmer Crosses alone (1 move)
-     * 
+    /**
+     * Generates all valid moves from the current state.
+     *
+     * @return A list of valid GameState objects representing possible moves.
      */
-    public ArrayList<GameState> possibleMoves() { // unexpanded nodes (children of the current node)
+    public ArrayList<GameState> possibleMoves() {
         ArrayList<GameState> moves = new ArrayList<GameState>();
-        for (int start = 0; start < BOARD_SIZE - 1; start++) { // loop through the first 3 entries (Corn, Goose, Fox)
+        for (int start = 0; start < BOARD_SIZE - 1; start++) { // iterate through the board
 
             // board[0] = Corn which can be on the L or R side, if the farmer is on the same
-            // side, that means we can take that item across
-            if (this.board[start] == this.farmerPlace) {
-                GameState newState = this.clone(); // Create a new node (state), this is a child of the parent (current
-                                                   // node/state)
+            // side, that means we can take that item across and so on for the rest
+            if (this.board[start] == this.farmerPlace) { // valid move
+                GameState newState = this.clone(); // create a new (state), this is a child of the parent
                 if (this.farmerPlace == 'L') { // if the farmer is on the left
                     newState.board[start] = 'R'; // move the entity (corn for example) to the right
                     newState.board[FARMER] = 'R'; // move the farmer to the right as well
@@ -140,15 +118,15 @@ public class GameState {
                     newState.board[FARMER] = 'L'; // move the farmers position to left
                     newState.farmerPlace = 'L'; // update the farmers position
                 }
-                if (!newState.sameBoard(this)) { // dont add states that have previous states already
-                    if (newState.isValidMove()) {
-                        moves.add(newState); // add child to the list of children this parent (current state/node can have)
+                if (!newState.sameBoard(this)) { // add new states if valid and not duplicate
+                    if (newState.isValidMove()) { // check pre and post conditions
+                        moves.add(newState);
                     }
                 }
 
             }
         }
-        // If the farmer is on the other side of this river with this entity,
+        // farmer crosses alone
         GameState newState = this.clone();
         if (this.farmerPlace == 'L') { // check if farmer is on the left side
             newState.board[FARMER] = 'R'; // move the farmer to the right side
@@ -157,9 +135,9 @@ public class GameState {
             newState.board[FARMER] = 'L';
             newState.farmerPlace = 'L';
         }
-        if(newState.isValidMove())
+        if (newState.isValidMove())
             moves.add(newState);
-            
+
         return moves;
     }
 }
